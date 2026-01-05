@@ -1,0 +1,44 @@
+name: glance-ts
+
+services:
+  glance-ts:
+    image: tailscale/tailscale:stable
+    container_name: glance-ts
+    hostname: glance
+    restart: unless-stopped
+    dns:
+      - 100.100.100.100  # Tailscale MagicDNS (for .ts.net domains)
+      - 8.8.8.8          # Google DNS (for regular internet domains)
+      - 1.1.1.1          # Cloudflare DNS (backup)
+
+    env_file:
+      - .env
+
+    environment:
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_USERSPACE: "false"
+
+    volumes:
+      - /volume2/docker/glance-ts/ts-state:/var/lib/tailscale
+
+    devices:
+      - /dev/net/tun:/dev/net/tun
+
+    cap_add:
+      - NET_ADMIN
+
+  glance:
+    image: glanceapp/glance:latest
+    container_name: glance
+    restart: unless-stopped
+    network_mode: service:glance-ts
+    env_file:
+      - .env
+
+    volumes:
+      - /volume2/docker/glance-ts/config/glance.yml:/app/config/glance.yml:ro
+      - /volume1:/volume1:ro
+      - /volume2:/volume2:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    pid: host

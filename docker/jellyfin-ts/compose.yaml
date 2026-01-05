@@ -1,0 +1,42 @@
+name: jellyfin-ts
+
+services:
+  jellyfin-ts:
+    image: tailscale/tailscale:stable
+    container_name: jellyfin-ts
+    hostname: jellyfin
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_USERSPACE: "false"
+
+    volumes:
+      - /volume2/docker/jellyfin-ts/ts-state:/var/lib/tailscale
+
+    devices:
+      - /dev/net/tun:/dev/net/tun
+
+    cap_add:
+      - NET_ADMIN
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    network_mode: service:jellyfin-ts
+
+    environment:
+      TZ: ${TZ}
+      JELLYFIN_PublishedServerUrl: https://jellyfin.cheetah-crocodile.ts.net
+
+    volumes:
+      - /volume2/docker/jellyfin-ts/config:/config
+      - /volume2/docker/jellyfin-ts/cache:/cache
+      - /volume2/docker/jellyfin-ts/transcode:/cache/transcodes
+      - /volume1/media/movies:/movies
+      - /volume1/media/music:/music
+      - /volume1/media/tv-shows:/tvshows

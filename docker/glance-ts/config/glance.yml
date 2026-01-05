@@ -1,0 +1,64 @@
+theme:
+  background-color: 240 21 15
+  contrast-multiplier: 1.5
+  primary-color: 217 92 83
+  positive-color: 115 54 76
+  negative-color: 347 70 65
+
+pages:
+  - name: Home
+    hide-desktop-navigation: true
+    center-vertically: true
+    columns:
+      - size: full
+        widgets:
+          - type: search
+            autofocus: true
+
+          - type: monitor
+            cache: 1m
+            title: Services
+            sites:
+              - title: Immich
+                url: https://immich.cheetah-crocodile.ts.net
+                icon: si:immich
+              - title: Jellyfin
+                url: https://jellyfin.cheetah-crocodile.ts.net
+                icon: si:jellyfin
+
+          - type: server-stats
+            servers:
+              - type: local
+                name: Ugreen DX4800 Plus
+                hide-mountpoints-by-default: false
+                mountpoints:
+                  "/":
+                    hide: true
+                  "/volume1":
+                    name: Volume 1 (HDD)
+                  "/volume2":
+                    name: Volume 2 (SSD)
+
+          - type: bookmarks
+            groups:
+              - title: Links
+                links:
+                  - title: NAS admin console
+                    url: https://moonserver.cheetah-crocodile.ts.net
+
+      - size: small
+        widgets:
+          - type: clock
+            format: 24h
+
+          - type: weather
+            location: Huizen, The Netherlands
+            units: metric
+            hour-format: 24h
+
+          - type: releases
+            cache: 1d
+            repositories:
+              - immich-app/immich
+              - jellyfin/jellyfin
+              - glanceapp/glance
