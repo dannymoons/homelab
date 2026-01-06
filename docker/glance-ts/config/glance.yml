@@ -31,13 +31,6 @@ pages:
               - type: local
                 name: Ugreen DX4800 Plus
                 hide-mountpoints-by-default: false
-                mountpoints:
-                  "/":
-                    hide: true
-                  "/volume1":
-                    name: Volume 1 (HDD)
-                  "/volume2":
-                    name: Volume 2 (SSD)
 
           - type: bookmarks
             groups:
@@ -49,12 +42,60 @@ pages:
       - size: small
         widgets:
           - type: clock
-            format: 24h
+            hour-format: 24h
 
           - type: weather
             location: Huizen, The Netherlands
             units: metric
             hour-format: 24h
+
+          - type: custom-api
+            title: Immich stats
+            cache: 1d
+            url: https://immich.cheetah-crocodile.ts.net/api/server/statistics
+            headers:
+              x-api-key: ${IMMICH_API_KEY}
+              Accept: application/json
+            template: |
+              <div class="flex justify-between text-center">
+                <div>
+                  <div class="color-highlight size-h3">{{ .JSON.Int "photos" | formatNumber }}</div>
+                  <div class="size-h6">PHOTOS</div>
+                </div>
+                <div>
+                  <div class="color-highlight size-h3">{{ .JSON.Int "videos" | formatNumber }}</div>
+                  <div class="size-h6">VIDEOS</div>
+                </div>
+                <div>
+                  <div class="color-highlight size-h3">
+                    {{ div (.JSON.Int "usage" | toFloat) 1073741824 | toInt | formatNumber }} GB
+                  </div>
+                  <div class="size-h6">USAGE</div>
+                </div>
+              </div>
+
+          - type: custom-api
+            title: Jellyfin stats
+            cache: 6h
+            url: https://jellyfin.cheetah-crocodile.ts.net/Items/Counts
+            headers:
+              X-Emby-Token: ${JELLYFIN_API_KEY}
+              Accept: application/json
+            template: |
+              <div class="flex justify-between text-center">
+                <div>
+                  <div class="color-highlight size-h3">{{ .JSON.Int "MovieCount" | formatNumber }}</div>
+                  <div class="size-h6">MOVIES</div>
+                </div>
+                <div>
+                  <div class="color-highlight size-h3">{{ .JSON.Int "SeriesCount" | formatNumber }}</div>
+                  <div class="size-h6">SERIES</div>
+                </div>
+                <div>
+                  <div class="color-highlight size-h3">{{ .JSON.Int "SongCount" | formatNumber }}</div>
+                  <div class="size-h6">SONGS</div>
+                </div>
+              </div>
 
           - type: releases
             cache: 1d
